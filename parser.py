@@ -6,12 +6,12 @@ import os
 import yaml
 from textfsm import clitable
 from paramiko import ssh_exception as pexception
-from exceptions import InventoryFileNotFound, \
-    CannotParseOutputWithTextFSM
+from exceptions import *
 from multiprocessing .dummy import Pool as Threadpool
 
 
 HOSTS_FILENAME = 'hosts.yaml'
+CREDENTIALS_FILENAME = 'credentials.yaml'
 POOL = Threadpool(4)
 WAIT_FOR_COMMAND_IN_SECONDS = 4
 TEMPLATE_DIR = './templates/'
@@ -110,7 +110,7 @@ class CumulusDevice(object):
         return structured_output
 
 
-def get_inventory():
+def _get_inventory():
 
     if os.path.isfile(HOSTS_FILENAME):
         inventory = read_yaml_file(HOSTS_FILENAME)
@@ -130,7 +130,7 @@ def read_yaml_file(filepath):
 
 
 def get_inventory_by_group(group):
-    inventory = get_inventory()
+    inventory = _get_inventory()
     group_inventory = inventory[group]['hosts']
 
     for k, v in group_inventory.items():
@@ -144,23 +144,38 @@ def get_inventory_by_group(group):
     return group_inventory
 
 
+def get_credentials_by_key(key):
+    if os.path.isfile(CREDENTIALS_FILENAME):
+        credentials = read_yaml_file(CREDENTIALS_FILENAME)
+    else:
+        raise CredentialsFileNotFound
+
+    credentials = credentials[key]
+
+    return {
+        'username': credentials['username'],
+        'password': credentials['password']
+    }
+
+
 if __name__ == '__main__':
     # get host inventory
     hosts = get_inventory_by_group('cumulus')
+    creds = get_credentials_by_key('cumulus')
 
     device = CumulusDevice(
-        hostname="10.30.20.82",
-        username="cumulus",
-        password=""
+        hostname=hosts['CSS1A-105-TBL-01'],
+        username=creds['username'],
+        password=creds['password']
     )
 
     show_version = device.show_version()
-    print(show_version)
+    print(json.dumps(show_version, indent=4))
 
-    # macs = device.show_bridge_macs()
-    # for mac in macs:
-    #     print(mac)
-    # print(len(macs))
+    macs = device.show_bridge_macs()
+    for mac in macs:
+        print(mac)
+    print(len(macs))
 
 
 

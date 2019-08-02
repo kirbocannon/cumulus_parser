@@ -4,3 +4,7 @@ class InventoryFileNotFound(Exception):
 
 class CannotParseOutputWithTextFSM(Exception):
     pass
+
+
+class CredentialsFileNotFound(Exception):
+    pass
