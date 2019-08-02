@@ -151,7 +151,7 @@ if __name__ == '__main__':
     device = CumulusDevice(
         hostname="10.30.20.82",
         username="cumulus",
-        password="T0dayweride!"
+        password=""
     )
 
     show_version = device.show_version()
