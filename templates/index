@@ -1,0 +1,16 @@
+# First line is the header fields for columns and is mandatory.
+# Regular expressions are supported in all fields except the first.
+# Last field supports variable length command completion.
+# abc[[xyz]] is expanded to abc(x(y(z)?)?)?, regexp inside [[]] is not supported
+#
+# Rules of Ordering:
+#  - OS in alphbetical order
+#  - Command in length other
+#  - When Length is the same, use alphabetical order
+#  - Keep space between OS's
+#
+Template, Hostname, Platform, Command
+
+
+cumulus_clos_show_version.template, .*, cumulus_clos, net sh[[ow]] ver[[sion]]
+cumulus_clos_show_bridge_macs_dynamic.template, .*, cumulus_clos, net sh[[ow]] br[[idge]] [[mac]]s dy[[namic]]

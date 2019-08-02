@@ -1,0 +1,11 @@
+Value Required NCLU_VERSION ([\d.]+)
+Value Required DISTRIB_ID ([\w\s]+)
+Value Required DISTRIB_RELEASE (\S+)
+Value Required DISTRIB_DESCRIPTION ([\d\w\s.]+)
+
+Start
+  ^NCLU_VERSION=${NCLU_VERSION}
+  ^DISTRIB_ID="${DISTRIB_ID}"
+  ^DISTRIB_RELEASE=${DISTRIB_RELEASE}
+  ^DISTRIB_DESCRIPTION="${DISTRIB_DESCRIPTION}" -> Record
+  ^.* -> Error "LINE NOT FOUND"

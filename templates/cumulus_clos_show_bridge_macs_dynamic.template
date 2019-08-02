@@ -1,0 +1,12 @@
+Value VLAN (\d+|untagged)
+Value MASTER (\w+|\s+)
+Value INTERFACE (\S+)
+Value MAC_ADDRESS (\w+?\.\w+?\.\w+?\w+?\.\w+?\.\w+\.\w+?\.\w+?\.\w+?\.\w+?|\w+?\:\w+?\:\w+?\w+?\:\w+?\w+?\:\w+?\w+?\:\w+?\w+?)
+Value TUNNEL_DESTINATION (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\w+?|\s+)
+Value STATE ()
+Value FLAGS ([\w,]+|\s+)
+Value LAST_SEEN ([0-9][0-9]:[0-9][0-9]:[0-9][0-9])
+
+Start
+  ^\s?${VLAN}\s+${MASTER}\s+?${INTERFACE}\s+?${MAC_ADDRESS}\s+${TUNNEL_DESTINATION}\s+?${FLAGS}\s+${LAST_SEEN} -> Record
+
