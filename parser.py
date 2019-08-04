@@ -12,6 +12,7 @@ from multiprocessing .dummy import Pool as Threadpool
 
 HOSTS_FILENAME = 'hosts.yaml'
 CREDENTIALS_FILENAME = 'credentials.yaml'
+VENDOR = 'cumulus'
 POOL = Threadpool(4)
 WAIT_FOR_COMMAND_IN_SECONDS = 4
 TEMPLATE_DIR = './templates/'
@@ -22,9 +23,9 @@ class CumulusDevice(object):
         self.hostname = hostname
         self.username = username
         self.password = password
+        self.session = None
 
     def _open_connection(self):
-        ssh_client = None
 
         try:
             ssh_client = paramiko.SSHClient()
@@ -37,27 +38,60 @@ class CumulusDevice(object):
                                allow_agent=False, timeout=5)
 
             print("SSH connection established to {0}".format(self.hostname))
+            self.session = ssh_client
 
         except (pexception.BadHostKeyException,
                 pexception.AuthenticationException,
                 pexception.SSHException,
                 pexception.socket.error) as e:
-                    print(e)
+            print(e)
 
-        return ssh_client
+        return
 
-    def _close_connection(self, client):
-        return client.close()
+    def _close_connection(self):
+        self.session.close()
+        self.session = None
+        print('session closed')
+
+        return
 
     def send_command(self, command):
-        """Wrapper for self.device.send.command().
-        If command is a list will iterate through commands until valid command.
-        """
+        """Wrapper for self.device.send.command()."""
+        output = []
+        sb = bool
 
-        ssh_client = self._open_connection()
-        _, stdout, stderr = ssh_client.exec_command(command, timeout=10)
-        output = stdout.read().decode('utf-8')
-        _ = self._close_connection(ssh_client)
+        if isinstance(command, str):
+            if not self.session:
+                sb = False
+                self._open_connection()
+
+            _, stdout, stderr = self.session.exec_command(command, timeout=10)
+            output.append({
+                'command': command,
+                'output': stdout.read().decode('utf-8')
+            })
+        elif isinstance(command, list):
+            commands = command
+            output = self._send_commands(commands)
+
+        if not sb:
+            self._close_connection()
+
+        return output
+
+    def _send_commands(self, commands):
+        output = []
+        self._open_connection()
+
+        for command in commands:
+            cmd_output = self._get_func(command)
+
+            output.append({
+                'command': command,
+                'output': cmd_output
+            })
+
+        self._close_connection()
 
         return output
 
@@ -90,24 +124,34 @@ class CumulusDevice(object):
         return structured_data
 
     def show_version(self):
-        output = self.send_command('net show version')
+        output = self.send_command('net show version')[0]['output']
         structured_output = device.parse_output(
             command="net show version",
             platform="cumulus_clos",
             data=output)
 
-        return structured_output
+        return structured_output[0]
 
     def show_bridge_macs(self, state='dynamic'):
         state = state.lower()
         command = f"net show bridge macs {state}"
-        output = self.send_command(command)
+        output = self.send_command(command)[0]['output']
         structured_output = device.parse_output(
             command=command,
             platform="cumulus_clos",
             data=output)
 
         return structured_output
+
+    def _get_func(self, name):
+        """ Get Functions Dynamically """
+        name = name.lower()
+        if 'net' in name:
+            name = name.split('net')[1].strip()
+        name = name.replace(' ', '_')
+        func = getattr(self, name, None)
+
+        return func()
 
 
 def _get_inventory():
@@ -160,22 +204,30 @@ def get_credentials_by_key(key):
 
 if __name__ == '__main__':
     # get host inventory
-    hosts = get_inventory_by_group('cumulus')
-    creds = get_credentials_by_key('cumulus')
+    hosts = get_inventory_by_group(VENDOR)
+    creds = get_credentials_by_key(VENDOR)
 
     device = CumulusDevice(
-        hostname=hosts['CSS1A-105-TBL-01'],
+        hostname=hosts['CSS1A-109-LEF-03'],
         username=creds['username'],
         password=creds['password']
     )
 
-    show_version = device.show_version()
-    print(json.dumps(show_version, indent=4))
+    # show_version = device.show_version()
+    # print(json.dumps(show_version, indent=4))
+    #
+    # show_version = device.show_version()
+    # print(json.dumps(show_version, indent=4))
 
-    macs = device.show_bridge_macs()
-    for mac in macs:
-        print(mac)
-    print(len(macs))
+    #l = device.send_command("cat /etc/network/interfaces")
+
+    #for b in l:
+    #    print(b)
+
+    # macs = device.show_bridge_macs()
+    # for mac in macs:
+    #     print(mac)
+    # print(len(macs))
 
 
 
