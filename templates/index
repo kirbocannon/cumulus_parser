@@ -13,4 +13,5 @@ Template, Hostname, Platform, Command
 
 
 cumulus_clos_show_version.template, .*, cumulus_clos, net sh[[ow]] ver[[sion]]
+cumulus_clos_show_interfaces_configuration.template, .*, cumulus_clos, sh[[ow]] int[[erfaces]] conf[[iguration]]
 cumulus_clos_show_bridge_macs_dynamic.template, .*, cumulus_clos, net sh[[ow]] br[[idge]] [[mac]]s dy[[namic]]

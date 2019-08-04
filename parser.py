@@ -12,8 +12,8 @@ from multiprocessing .dummy import Pool as Threadpool
 
 HOSTS_FILENAME = 'hosts.yaml'
 CREDENTIALS_FILENAME = 'credentials.yaml'
+PLATFORM = 'cumulus_clos'
 VENDOR = 'cumulus'
-POOL = Threadpool(4)
 WAIT_FOR_COMMAND_IN_SECONDS = 4
 TEMPLATE_DIR = './templates/'
 
@@ -123,25 +123,65 @@ class CumulusDevice(object):
 
         return structured_data
 
-    def show_version(self):
-        output = self.send_command('net show version')[0]['output']
-        structured_output = device.parse_output(
-            command="net show version",
-            platform="cumulus_clos",
-            data=output)
+    def show_version(self, from_json=True):
+        command = 'net show version'
 
-        return structured_output[0]
-
-    def show_bridge_macs(self, state='dynamic'):
-        state = state.lower()
-        command = f"net show bridge macs {state}"
-        output = self.send_command(command)[0]['output']
-        structured_output = device.parse_output(
-            command=command,
-            platform="cumulus_clos",
-            data=output)
+        if from_json:
+            output = self.send_command(command + ' ' + 'json')[0]['output']
+            structured_output = json.loads(output)
+        else:
+            output = self.send_command(command)[0]['output']
+            structured_output = self.parse_output(
+                command=command,
+                platform=PLATFORM,
+                data=output)[0]
 
         return structured_output
+
+    def show_bridge_macs(self, state='dynamic', from_json=False):
+        """ Get bridge macs from Device. Currently it seems like json output
+        does not return VLAN ID. So default from_json will be set to False here """
+        state = state.lower()
+        command = f"net show bridge macs {state}"
+
+        if from_json:
+            output = self.send_command(command + ' ' + 'json')[0]['output']
+            structured_output = json.loads(output)
+
+        else:
+            output = self.send_command(command)[0]['output']
+            structured_output = self.parse_output(
+                command=command,
+                platform=PLATFORM,
+                data=output)
+
+        return structured_output
+
+    def show_interfaces_configuration(self, filter='all'):
+        #output = self.send_command("cat /etc/network/interfaces")[0]['output']
+        filter = filter.lower()
+        output = INTERFACES
+        interfaces = []
+        vnis = []
+        structured_output = self.parse_output(
+            command="show interfaces configuration",
+            platform=PLATFORM,
+            data=output)
+
+        for entry in structured_output:
+            interface = {}
+            for k, v in entry.items():
+                if v:
+                    interface[k] = v
+            interfaces.append(interface)
+
+            if interface.get('vxlan_id'):
+                vnis.append(interface)
+
+        if filter == 'vni':
+            interfaces = vnis
+
+        return interfaces
 
     def _get_func(self, name):
         """ Get Functions Dynamically """
@@ -202,19 +242,71 @@ def get_credentials_by_key(key):
     }
 
 
+def multithread_command(command, hosts):
+    pool = Threadpool(4)
+    host_ips = [inventory_hosts[host] for host in hosts]
+
+    def _sc(host):
+        device = CumulusDevice(
+            hostname=host,
+            username=creds['username'],
+            password=creds['password']
+        )
+
+        results = device.send_command([command])[0]
+        results['host'] = host
+
+        return results
+
+    results = pool.map(_sc, host_ips)
+
+    pool.close()
+    pool.join()
+
+    return results
+
+
 if __name__ == '__main__':
     # get host inventory
-    hosts = get_inventory_by_group(VENDOR)
+    inventory_hosts = get_inventory_by_group(VENDOR)
     creds = get_credentials_by_key(VENDOR)
 
-    device = CumulusDevice(
-        hostname=hosts['CSS1A-109-LEF-03'],
-        username=creds['username'],
-        password=creds['password']
-    )
+    h = ["CSS1A-106-LEF-01", "CSS1A-106-LEF-02" ]
+
+    multithread_command('show interfaces configuration', h)
+
+
+
+
+    # device = CumulusDevice(
+    #     #hostname=hosts['CSS1A-109-LEF-03'],
+    #     hostname=hosts['CSS1A-106-LEF-01'],
+    #     #hostname=hosts['CSS1A-105-TBL-01'],
+    #     username=creds['username'],
+    #     password=creds['password']
+    # )
+    #
+
+
+
+
+
+
+    # blah = device.show_interfaces_configuration()
+    # for i in blah:
+    #     #print(json.dumps(i, indent=4))
+    #     print(i)
+
+    # caw = device.show_bridge_macs()
+    # for i in caw:
+    #     print(i)
+    #
+    # print(len(caw))
 
     # show_version = device.show_version()
     # print(json.dumps(show_version, indent=4))
+
+
     #
     # show_version = device.show_version()
     # print(json.dumps(show_version, indent=4))
