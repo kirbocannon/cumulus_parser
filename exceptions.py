@@ -9,5 +9,6 @@ class CannotParseOutputWithTextFSM(Exception):
 class CredentialsFileNotFound(Exception):
     pass
 
+
 class CommandNotSupported(Exception):
     pass

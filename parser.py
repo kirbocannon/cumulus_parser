@@ -1,6 +1,5 @@
 import paramiko
 import json
-import logging
 import logging.config
 import argparse
 import os
@@ -21,17 +20,17 @@ TEMPLATE_DIR = './templates/'
 # logging
 ERROR_FORMAT = "%(levelname)s at %(asctime)s in %(funcName)s in %(filename) at line %(lineno)d: %(message)s"
 DEBUG_FORMAT = "%(lineno)d in %(filename)s at %(asctime)s: %(message)s"
-LOG_CONFIG = {'version':1,
-              'formatters':{'error':{'format':ERROR_FORMAT},
-                            'debug':{'format':DEBUG_FORMAT}},
-              'handlers':{'console':{'class':'logging.StreamHandler',
-                                     'formatter':'debug',
-                                     'level':logging.DEBUG},
-                          'file':{'class':'logging.FileHandler',
-                                  'filename':'errors.log',
-                                  'formatter':'error',
-                                  'level':logging.ERROR}},
-              'root':{'handlers':('console', 'file'), 'level': 'ERROR'}}
+LOG_CONFIG = {'version': 1,
+              'formatters': {'error': {'format': ERROR_FORMAT},
+                            'debug': {'format': DEBUG_FORMAT}},
+              'handlers': {'console': {'class': 'logging.StreamHandler',
+                                     'formatter':  'debug',
+                                     'level': logging.DEBUG},
+                          'file': {'class': 'logging.FileHandler',
+                                  'filename': 'errors.log',
+                                  'formatter': 'error',
+                                  'level': logging.ERROR}},
+              'root': {'handlers': ('console', 'file'), 'level': 'ERROR'}}
 
 logging.config.dictConfig(LOG_CONFIG)
 logger = logging.getLogger(__name__)
@@ -92,7 +91,7 @@ def multithread_command(command, hosts):
     host_ips = [inventory_hosts[host] for host in hosts]
 
     def _send_multithread_command(host):
-        device = CumulusDevice(
+        device = CumulusConnection(
             hostname=host,
             username=creds['username'],
             password=creds['password']
@@ -180,7 +179,7 @@ def gen_args():
     return parser.parse_args()
 
 
-class CumulusDevice(object):
+class CumulusConnection(object):
     def __init__(self, hostname, username, password):
         self.hostname = hostname
         self.username = username
@@ -397,7 +396,7 @@ if __name__ == '__main__':
 
 
 
-    # device = CumulusDevice(
+    # device = CumulusConnection(
     #     #hostname=hosts['CSS1A-109-LEF-03'],
     #     hostname=hosts['CSS1A-106-LEF-01'],
     #     #hostname=hosts['CSS1A-105-TBL-01'],
