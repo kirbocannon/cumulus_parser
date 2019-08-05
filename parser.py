@@ -1,6 +1,7 @@
 import paramiko
 import json
 import logging
+import logging.config
 import argparse
 import os
 import yaml
@@ -18,23 +19,22 @@ WAIT_FOR_COMMAND_IN_SECONDS = 4
 TEMPLATE_DIR = './templates/'
 
 # logging
+ERROR_FORMAT = "%(levelname)s at %(asctime)s in %(funcName)s in %(filename) at line %(lineno)d: %(message)s"
+DEBUG_FORMAT = "%(lineno)d in %(filename)s at %(asctime)s: %(message)s"
+LOG_CONFIG = {'version':1,
+              'formatters':{'error':{'format':ERROR_FORMAT},
+                            'debug':{'format':DEBUG_FORMAT}},
+              'handlers':{'console':{'class':'logging.StreamHandler',
+                                     'formatter':'debug',
+                                     'level':logging.DEBUG},
+                          'file':{'class':'logging.FileHandler',
+                                  'filename':'errors.log',
+                                  'formatter':'error',
+                                  'level':logging.ERROR}},
+              'root':{'handlers':('console', 'file'), 'level': 'ERROR'}}
+
+logging.config.dictConfig(LOG_CONFIG)
 logger = logging.getLogger(__name__)
-
-# handlers
-console_log_handler = logging.StreamHandler()
-file_log_handler = logging.FileHandler('logs.log')
-console_log_handler.setLevel(logging.WARNING)
-file_log_handler.setLevel(logging.DEBUG)
-
-# formaters
-console_log_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-file_log_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_log_handler.setFormatter(console_log_format)
-file_log_handler.setFormatter(file_log_format)
-
-# Add handlers to the logger
-logger.addHandler(console_log_handler)
-logger.addHandler(file_log_handler)
 
 
 def _get_inventory():
@@ -360,7 +360,7 @@ if __name__ == '__main__':
     else:
         if args.cumulus_crawler == 'search':
             if args.mac:
-                results = check_mac_address(args.mac, inventory_hosts)
+                results = check_mac_address(args.mac, hosts)
                 for result in results:
                     print(f"{result['hostname']} - Mac Found: {result['found']}")
             elif args.iface:

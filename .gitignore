@@ -10,3 +10,4 @@ archive/
 credentials.yaml
 hosts.yaml
 test_data.py
+*.log
