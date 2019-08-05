@@ -1,0 +1,68 @@
+---
+
+grand_rapids:
+  hosts:
+    CSS1A-105-TBL-01:
+      ansible_host: 10.30.20.60
+    CSS1A-105-TBL-02:
+      ansible_host: 10.30.20.61
+    CSS1A-105-BLF-01:
+      ansible_host: 10.30.20.20
+    CSS1A-105-BLF-02:
+      ansible_host: 10.30.20.21
+    CSS1A-105-SPN-01:
+      ansible_host: 10.30.20.70
+    CSS1A-105-SPN-02:
+      ansible_host: 10.30.20.71
+    CSS1A-106-LEF-01:
+      ansible_host: 10.30.20.80
+    CSS1A-106-LEF-02:
+      ansible_host: 10.30.20.81
+    CSS1A-109-LEF-03:
+      ansible_host: 10.30.20.82
+    CSS1A-109-LEF-04:
+      ansible_host: 10.30.20.83
+    CSS1A-105-EDG-01:
+      ansible_host: 10.30.20.30
+      loopback_address: 10.35.0.30
+    CSS1A-105-EDG-02:
+      ansible_host: 10.30.20.31
+      loopback_address: 10.35.0.31
+    CSS1A-107-ISC-01:
+      ansible_host: 10.30.20.92
+    CSS1A-107-ISC-02:
+      ansbile_host: 10.30.20.93
+
+southfield:
+  hosts:
+    SFD-C320-BLF-S4048-01:
+      ansible_host: 10.10.20.10
+    SFD-C320-BLF-S4048-02:
+      ansible_host: 10.10.20.11
+    SFD-C320-EDG-S4048-01:
+      ansible_host: 10.10.20.45
+    SFD-C320-EDG-S4048-02:
+      ansible_host: 10.10.20.46
+    SFD-C319-CSS-S5000:
+      ansible_host: 10.10.20.1
+    SFD-C319-SPN-SN2700-01:
+      ansible_host: 10.10.20.40
+    SFD-C319-SPN-SN2700-02:
+      ansible_host: 10.10.20.41
+
+cumulus:
+  hosts:
+    CSS1A-105-TBL-01:
+    CSS1A-105-TBL-02:
+    CSS1A-105-BLF-01:
+    CSS1A-105-BLF-02:
+    CSS1A-105-SPN-01:
+    CSS1A-105-SPN-02:
+    CSS1A-106-LEF-01:
+    CSS1A-106-LEF-02:
+    CSS1A-109-LEF-03:
+    CSS1A-109-LEF-04:
+    SFD-C320-BLF-S4048-01:
+    SFD-C320-BLF-S4048-02:
+    SFD-C319-SPN-SN2700-01:
+    SFD-C319-SPN-SN2700-02:

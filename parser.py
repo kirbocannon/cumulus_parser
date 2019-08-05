@@ -11,7 +11,6 @@ from paramiko import ssh_exception as pexception
 from exceptions import *
 from multiprocessing .dummy import Pool as Threadpool
 
-
 HOSTS_FILENAME = 'hosts.yaml'
 CREDENTIALS_FILENAME = 'credentials.yaml'
 PLATFORM = 'cumulus_clos'
@@ -202,9 +201,12 @@ def gen_args():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='Arguments', dest='cumulus_crawler')
     subparser_search = subparsers.add_parser('search', help='Search')
+    subparser_check = subparsers.add_parser('check', help='Check Status, such as BGP')
     mgroup_search = subparser_search.add_mutually_exclusive_group(required=True)
+    #mgroup_check = subparser_check.add_mutually_exclusive_group(required=True)
     mgroup_search.add_argument("-m", "--mac", help="Search MAC address", dest='mac')
     mgroup_search.add_argument("-i", "--iface", help="Search Interface", dest='iface')
+    subparser_check.add_argument("-b", "--bgp", help="Check BGP", dest='bgp', action='store_true')
 
     return parser.parse_args()
 
@@ -324,6 +326,8 @@ class CumulusConnection(object):
         return structured_output
 
     def show_interfaces_configuration(self, filter='all'):
+        """ Get's interface configuration from /etc/network/interfaces file.
+            Not all interface configurations are supported at this time. """
         output = self.send_command("cat /etc/network/interfaces")[0]['output']
         filter = filter.lower()
         interfaces = []
@@ -348,6 +352,15 @@ class CumulusConnection(object):
             interfaces = vnis
 
         return interfaces
+
+    def show_bgp_summary(self):
+        """ Currently only supports JSON output
+            Currently no VRF support """
+        command = "net show bgp summary"
+        output = self.send_command(command + ' ' + 'json')[0]['output']
+        structured_output = json.loads(output)
+
+        return structured_output
 
     def _get_func(self, name):
         """ Get Functions Dynamically """
@@ -379,10 +392,34 @@ if __name__ == '__main__':
         if args.cumulus_crawler == 'search':
             if args.mac:
                 results = check_mac_address(args.mac, hosts)
-                print('\n', tabulate_to_console(results))
+                print('\n')
+                print(tabulate_to_console(results))
             elif args.iface:
                 results = check_interface_configuration(args.iface, hosts)
                 print(results)
+        elif args.cumulus_crawler == 'check':
+            if args.bgp:
+                device = CumulusConnection(
+                    hostname='10.30.20.20',
+                    username=creds['username'],
+                    password=creds['password']
+                )
+
+                address_families = ['ipv4 unicast', 'l2vpn evpn', 'ipv6 unicast']
+                bgp_sum = device.show_bgp_summary()
+                #print(json.dumps(bgp_sum, indent=4))
+                #bgp_sum = {'ipv4 unicast': {'as': 65180, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2287392, 'msgSent': 2160564, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045789, 'peerUptimeMsec': 4990441000, 'prefixReceivedCount': 7, 'remoteAs': 65181, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1937519, 'msgSent': 2160373, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045640, 'peerUptimeMsec': 4990590000, 'prefixReceivedCount': 6, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2188307, 'msgSent': 2160220, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045642, 'peerUptimeMsec': 4990588000, 'prefixReceivedCount': 6, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 15, 'ribMemory': 2280, 'routerId': '10.35.0.80', 'tableVersion': 29, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}, 'ipv6 unicast': {}, 'l2vpn evpn': {'as': 65180, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2287393, 'msgSent': 2160565, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045789, 'peerUptimeMsec': 4990443000, 'prefixReceivedCount': 1800, 'remoteAs': 65181, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1937520, 'msgSent': 2160374, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045640, 'peerUptimeMsec': 4990592000, 'prefixReceivedCount': 1800, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2188308, 'msgSent': 2160221, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045642, 'peerUptimeMsec': 4990590000, 'prefixReceivedCount': 1800, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 403, 'ribMemory': 61256, 'routerId': '10.35.0.80', 'tableVersion': 0, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}}
+
+                print('\n')
+                for family in address_families:
+                    print(f"--- {family} ---")
+                    if bgp_sum[family].get('peers'):
+                        for interface, details in bgp_sum[family]['peers'].items():
+                            print(f"{interface} --> {details.get('hostname')} ({details['state']})")
+                    else:
+                        print('No Peers')
+                    print("---------------------")
+                    print('\n')
 
 
 

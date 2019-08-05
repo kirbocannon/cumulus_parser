@@ -1,13 +1,10 @@
-*.pyc
+**.pyc
 *.DS_Store
 .DS_Store/
 .idea/
 venv/
 archive/
 *.bak*
-*.yaml
-*.yml
 credentials.yaml
-hosts.yaml
 test_data.py
 *.log
