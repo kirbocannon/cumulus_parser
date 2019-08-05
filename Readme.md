@@ -14,6 +14,6 @@ Python 3.6+
 
 Essentially, this will log in via SSH and run the following command:
 ```
-cumulus-switch01:~$ > net show bridge macs dynamic
+cumulus-switch01:~$ net show bridge macs dynamic
 ```
 
