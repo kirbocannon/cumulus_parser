@@ -18,6 +18,29 @@ cumulus-switch01:~$ net show bridge macs dynamic
 
 ### Check BGP status of environment
 
+#### Define Validation File using YAML in ```./templates/validation/bgp.yaml```
+```
+---
+
+SFD-C320-BLF-S4048-01:
+  bgp_neighbors:
+    ipv4 unicast:
+      peers:
+        peerlink.4094: SFD-C320-BLF-S4048-02
+        swp16: CSS1A-105-TBL-01
+        swp17: CSSFH-S4048-01
+
+SFD-C320-BLF-S4048-02:
+  bgp_neighbors:
+    ipv4 unicast:
+      peers:
+        peerlink.4094: SFD-C320-BLF-S4048-01
+        swp16: CSS1A-105-TBL-02
+        swp17: CSSFH-S4048-02
+```
+
+Then use the following command to validate current BGP state:
+
 ```python parser.py check --bgp```
 
 This command will let you know if there is any obvious issue with BGP. In the following
