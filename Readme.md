@@ -18,7 +18,11 @@ cumulus-switch01:~$ net show bridge macs dynamic
 
 ### Check BGP status of environment
 
-#### Define Validation File using YAML in ```./templates/validation/bgp.yaml```
+#### Define Validation File using YAML 
+Create the following file:  ```./templates/validation/bgp.yaml```
+
+Add validation like so:
+
 ```
 ---
 
@@ -43,8 +47,15 @@ Then use the following command to validate current BGP state:
 
 ```python parser.py check --bgp```
 
+This logs onto all the switches and runs the following command:
+
+```
+cumulus-switch01:~$ net show bgp summary
+```
+
 This command will let you know if there is any obvious issue with BGP. In the following
 output, two different switches have not met the validation requirements:
+
 ```
   --> CSS1A-106-LEF-01's required peer on interface peerlink.4094 to CSS1A-106-LEF-02 failed check because 
       peering is not established!  
