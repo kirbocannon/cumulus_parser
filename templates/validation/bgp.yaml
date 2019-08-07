@@ -68,13 +68,13 @@ CSS1A-105-BLF-01:
     l2vpn evpn:
       peers:
         peerlink.4094: CSS1A-105-BLF-02
-        swp16: CSS1A-105-SPN-01
         swp19: CSS1A-105-SPN-01
+        swp20: CSS1A-105-SPN-02
     ipv4_unicast:
       peers:
         peerlink.4094: CSS1A-105-BLF-02
-        swp16: CSS1A-105-SPN-01
         swp19: CSS1A-105-SPN-01
+        swp20: CSS1A-105-SPN-02
 
 CSS1A-105-BLF-02:
   bgp_neighbors:
@@ -82,12 +82,12 @@ CSS1A-105-BLF-02:
       peers:
         peerlink.4094: CSS1A-105-BLF-01
         swp19: CSS1A-105-SPN-01
-        swp20: CSS1A-105-SPN-01
+        swp20: CSS1A-105-SPN-02
     ipv4 unicast:
       peers:
         peerlink.4094: CSS1A-105-BLF-01
         swp19: CSS1A-105-SPN-01
-        swp20: CSS1A-105-SPN-01
+        swp20: CSS1A-105-SPN-02
 
 CSS1A-106-LEF-01:
   bgp_neighbors:
