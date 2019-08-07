@@ -12,3 +12,9 @@ class CredentialsFileNotFound(Exception):
 
 class CommandNotSupported(Exception):
     pass
+
+
+class ValidationFileNotFound(Exception):
+    pass
+
+

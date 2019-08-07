@@ -1,46 +1,47 @@
 ---
+
 SFD-C319-SPN-SN2700-01:
 SFD-C319-SPN-SN2700-02:
 
 SFD-C320-BLF-S4048-01:
   bgp_neighbors:
-    ipv4_unicast:
+    ipv4 unicast:
       peers:
-        peerlink: SFD-C320-BLF-S4048-02
+        peerlink.4094: SFD-C320-BLF-S4048-02
         swp16: CSS1A-105-TBL-01
         swp17: CSSFH-S4048-01
 
 SFD-C320-BLF-S4048-02:
   bgp_neighbors:
-    ipv4_unicast:
+    ipv4 unicast:
       peers:
-        peerlink: SFD-C320-BLF-S4048-01
+        peerlink.4094: SFD-C320-BLF-S4048-01
         swp16: CSS1A-105-TBL-02
         swp17: CSSFH-S4048-02
 
 CSS1A-105-TBL-01:
   bgp_neighbors:
-    ipv4_unicast:
+    ipv4 unicast:
       peers:
-        peerlink: CSS1A-105-TBL-02
+        peerlink.4094: CSS1A-105-TBL-02
         swp16: SFD-C320-BLF-S4048-01
 
 CSS1A-105-TBL-02:
   bgp_neighbors:
-    ipv4_unicast:
+    ipv4 unicast:
       peers:
-        peerlink: CSS1A-105-TBL-01
+        peerlink.4094: CSS1A-105-TBL-01
         swp16: SFD-C320-BLF-S4048-02
 
 CSS1A-105-SPN-01:
   bgp_neighbors:
-    l2vpn_evpn:
+    l2vpn evpn:
       peers:
         swp7: CSS1A-106-LEF-01
         swp8: CSS1A-106-LEF-02
         swp25: CSS1A-105-BLF-01
         swp26: CSS1A-105-BLF-02
-    ipv4_unicast:
+    ipv4 unicast:
       peers:
         swp7: CSS1A-106-LEF-01
         swp8: CSS1A-106-LEF-02
@@ -49,7 +50,7 @@ CSS1A-105-SPN-01:
 
 CSS1A-105-SPN-02:
   bgp_neighbors:
-    l2vpn_evpn:
+    l2vpn evpn:
       peers:
         swp7: CSS1A-106-LEF-01
         swp8: CSS1A-106-LEF-02
@@ -64,52 +65,52 @@ CSS1A-105-SPN-02:
 
 CSS1A-105-BLF-01:
   bgp_neighbors:
-    l2vpn_evpn:
+    l2vpn evpn:
       peers:
-        peerlink: CSS1A-105-BLF-02
+        peerlink.4094: CSS1A-105-BLF-02
         swp16: CSS1A-105-SPN-01
         swp19: CSS1A-105-SPN-01
     ipv4_unicast:
       peers:
-        peerlink: CSS1A-105-BLF-02
+        peerlink.4094: CSS1A-105-BLF-02
         swp16: CSS1A-105-SPN-01
         swp19: CSS1A-105-SPN-01
 
 CSS1A-105-BLF-02:
   bgp_neighbors:
-    l2vpn_evpn:
+    l2vpn evpn:
       peers:
-        peerlink: CSS1A-105-BLF-01
+        peerlink.4094: CSS1A-105-BLF-01
         swp19: CSS1A-105-SPN-01
         swp20: CSS1A-105-SPN-01
-    ipv4_unicast:
+    ipv4 unicast:
       peers:
-        peerlink: CSS1A-105-BLF-01
+        peerlink.4094: CSS1A-105-BLF-01
         swp19: CSS1A-105-SPN-01
         swp20: CSS1A-105-SPN-01
 
 CSS1A-106-LEF-01:
   bgp_neighbors:
-    l2vpn_evpn:
+    l2vpn evpn:
       peers:
-        peerlink: CSS1A-106-LEF-02
+        peerlink.4094: CSS1A-106-LEF-02
         swp49: CSS1A-105-SPN-01
-        swp50: CSS1A-105-SPN-01
-    ipv4_unicast:
+        swp50: CSS1A-105-SPN-02
+    ipv4 unicast:
       peers:
-        peerlink: CSS1A-106-LEF-02
+        peerlink.4094: CSS1A-106-LEF-02
         swp49: CSS1A-105-SPN-01
-        swp50: CSS1A-105-SPN-01
+        swp50: CSS1A-105-SPN-02
 
 CSS1A-106-LEF-02:
   bgp_neighbors:
-    l2vpn_evpn:
+    l2vpn evpn:
       peers:
-        peerlink: CSS1A-106-LEF-01
+        peerlink.4094: CSS1A-106-LEF-01
         swp49: CSS1A-105-SPN-01
-        swp50: CSS1A-105-SPN-01
-    ipv4_unicast:
+        swp50: CSS1A-105-SPN-02
+    ipv4 unicast:
       peers:
-        peerlink: CSS1A-106-LEF-02
+        peerlink.4094: CSS1A-106-LEF-01
         swp49: CSS1A-105-SPN-01
-        swp50: CSS1A-105-SPN-01
+        swp50: CSS1A-105-SPN-02

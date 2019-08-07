@@ -12,11 +12,13 @@ from exceptions import *
 from multiprocessing .dummy import Pool as Threadpool
 
 HOSTS_FILENAME = 'hosts.yaml'
+VALIDATION_DIR = './templates/validation'
 CREDENTIALS_FILENAME = 'credentials.yaml'
 PLATFORM = 'cumulus_clos'
 VENDOR = 'cumulus'
 WAIT_FOR_COMMAND_IN_SECONDS = 4
 TEMPLATE_DIR = './templates/'
+ADDRESS_FAMILIES = ['ipv4 unicast', 'l2vpn evpn']
 
 # logging
 ERROR_FORMAT = "%(levelname)s at %(asctime)s in %(funcName)s in %(filename) at line %(lineno)d: %(message)s"
@@ -37,7 +39,16 @@ logging.config.dictConfig(LOG_CONFIG)
 logger = logging.getLogger(__name__)
 
 
-def _get_inventory():
+def read_yaml_file(filepath):
+    """ Read YAML file """
+
+    with open(filepath, 'r') as stream:
+        data = yaml.safe_load(stream)
+
+    return data
+
+
+def get_inventory():
 
     if os.path.isfile(HOSTS_FILENAME):
         inventory = read_yaml_file(HOSTS_FILENAME)
@@ -48,28 +59,53 @@ def _get_inventory():
     return inventory
 
 
-def read_yaml_file(filepath):
-    """ Read YAML file """
+def get_validation_by_hostname(hostname, check):
 
-    with open(filepath, 'r') as stream:
-        data = yaml.safe_load(stream)
+    validation_filename = os.path.join(VALIDATION_DIR, check + '.yaml')
 
-    return data
+    if os.path.isfile(HOSTS_FILENAME):
+        validation_file = read_yaml_file(validation_filename)
+    else:
+        logger.error(f"Cannot find validation file: {validation_filename}")
+        raise ValidationFileNotFound
+
+    return validation_file[hostname]
 
 
 def get_inventory_by_group(group):
-    inventory = _get_inventory()
+
+    inventory = get_inventory()
+
     group_inventory = inventory[group]['hosts']
 
     for k, v in group_inventory.items():
         for _, i in inventory.items():
             if i.get('hosts'):
-                caw = i['hosts']
-                if caw.get(k) and isinstance(caw.get(k), dict):
-                    if caw[k].get('ansible_host'):
-                        group_inventory[k] = caw[k]['ansible_host']
+                ihosts = i['hosts']
+                if ihosts.get(k) and isinstance(ihosts.get(k), dict):
+                    if ihosts[k].get('ansible_host'):
+                        group_inventory[k] = ihosts[k]['ansible_host']
 
     return group_inventory
+
+
+def get_hostname_by_ip(ip):
+    """ Iterates through the inventory group and gets the first
+        hostname which contains a key ansible_host of match IP """
+
+    inventory = get_inventory()
+    hostname = None
+
+    for k, v in inventory.items():
+        if v.get('hosts'):
+            ihosts = v['hosts']
+            for k2, v2 in ihosts.items():
+                if v2:
+                    if v2.get('ansible_host', '') == ip:
+                        hostname = k2
+                        break
+
+    return hostname
 
 
 def get_credentials_by_key(key):
@@ -121,7 +157,7 @@ def find_hostname_from_ip_address(ip):
     return hostname
 
 
-def check_interface_configuration(iface, hosts):
+def search_interface_configuration(iface, hosts):
     iface = iface.lower()
     interface_search_results = []
     results = multithread_command('show interfaces configuration', hosts)
@@ -146,7 +182,7 @@ def check_interface_configuration(iface, hosts):
     return interface_search_results
 
 
-def check_mac_address(mac, hosts):
+def search_mac_address(mac, hosts):
     mac = mac.lower()
     mac_search_results = []
     results = multithread_command('show bridge macs', hosts)
@@ -166,6 +202,50 @@ def check_mac_address(mac, hosts):
         ))
 
     return mac_search_results
+
+
+def check_bgp_neighbors(hosts):
+    required_peers = []
+
+    #results = multithread_command('show bgp summary', hosts)
+    results = [{'command': 'show bgp summary', 'output': {'ipv4 unicast': {'as': 65180, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2320634, 'msgSent': 2192824, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045790, 'peerUptimeMsec': 5075969000, 'prefixReceivedCount': 7, 'remoteAs': 65181, 'state': 'Idle', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1969283, 'msgSent': 2192633, 'outq': 0, 'peerUptime': '08w2d18h', 'peerUptimeEstablishedEpoch': 1560045641, 'peerUptimeMsec': 5076118000, 'prefixReceivedCount': 6, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2223004, 'msgSent': 2192480, 'outq': 0, 'peerUptime': '08w2d18h', 'peerUptimeEstablishedEpoch': 1560045643, 'peerUptimeMsec': 5076116000, 'prefixReceivedCount': 6, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 15, 'ribMemory': 2280, 'routerId': '10.35.0.80', 'tableVersion': 29, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}, 'ipv6 unicast': {}, 'l2vpn evpn': {'as': 65180, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2320634, 'msgSent': 2192824, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045789, 'peerUptimeMsec': 5075971000, 'prefixReceivedCount': 1808, 'remoteAs': 65181, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1969283, 'msgSent': 2192633, 'outq': 0, 'peerUptime': '08w2d18h', 'peerUptimeEstablishedEpoch': 1560045640, 'peerUptimeMsec': 5076120000, 'prefixReceivedCount': 1808, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2223005, 'msgSent': 2192480, 'outq': 0, 'peerUptime': '08w2d18h', 'peerUptimeEstablishedEpoch': 1560045642, 'peerUptimeMsec': 5076118000, 'prefixReceivedCount': 1808, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 403, 'ribMemory': 61256, 'routerId': '10.35.0.80', 'tableVersion': 0, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}}, 'host': '10.30.20.80'},
+{'command': 'show bgp summary', 'output': {'ipv4 unicast': {'as': 65181, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2192410, 'msgSent': 2320366, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045874, 'peerUptimeMsec': 5075885000, 'prefixReceivedCount': 7, 'remoteAs': 65180, 'state': 'idle', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1969154, 'msgSent': 2320365, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045880, 'peerUptimeMsec': 5075879000, 'prefixReceivedCount': 7, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2222788, 'msgSent': 2320219, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045883, 'peerUptimeMsec': 5075876000, 'prefixReceivedCount': 7, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 15, 'ribMemory': 2280, 'routerId': '10.35.0.81', 'tableVersion': 28, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}, 'ipv6 unicast': {}, 'l2vpn evpn': {'as': 65181, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2192410, 'msgSent': 2320366, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045874, 'peerUptimeMsec': 5075886000, 'prefixReceivedCount': 1808, 'remoteAs': 65180, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1969154, 'msgSent': 2320365, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045880, 'peerUptimeMsec': 5075880000, 'prefixReceivedCount': 1808, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2222789, 'msgSent': 2320219, 'outq': 0, 'peerUptime': '08w2d17h', 'peerUptimeEstablishedEpoch': 1560045883, 'peerUptimeMsec': 5075877000, 'prefixReceivedCount': 1808, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 403, 'ribMemory': 61256, 'routerId': '10.35.0.81', 'tableVersion': 0, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}}, 'host': '10.30.20.81'}]
+
+    for result in results:
+        hostname = get_hostname_by_ip(result['host'])
+        required_peers_dict = {'hostname': hostname,'ipv4 unicast': [], 'l2vpn evpn': []}
+        bgp_validators = get_validation_by_hostname(hostname, 'bgp')
+
+        # get validators
+        for family in ADDRESS_FAMILIES:
+            if bgp_validators.get('bgp_neighbors'):
+                if bgp_validators['bgp_neighbors'].get(family):
+                    if bgp_validators['bgp_neighbors'][family].get('peers'):
+                        for i, h in bgp_validators['bgp_neighbors'][family]['peers'].items():
+                            required_peers_dict[family].append({
+                                'interface': i,
+                                'peer_hostname': h,
+                                'found': False,
+                                'established': False
+
+                        })
+
+        # get current state
+        for family in ADDRESS_FAMILIES:
+            if result.get('output'):
+                if result['output'][family].get('peers'):
+                    for interface, details in result['output'][family]['peers'].items():
+                        for required_peer in required_peers_dict[family]:
+                            if interface == required_peer['interface'] and \
+                                    details['hostname'] == required_peer['peer_hostname']:
+                                required_peer['found'] = True
+                                if details['state'].upper() == 'ESTABLISHED':
+                                    required_peer['established'] = True
+                                break
+
+        required_peers.append(required_peers_dict)
+
+    return required_peers
 
 
 def tabulate_to_console(results):
@@ -207,6 +287,7 @@ def gen_args():
     mgroup_search.add_argument("-m", "--mac", help="Search MAC address", dest='mac')
     mgroup_search.add_argument("-i", "--iface", help="Search Interface", dest='iface')
     subparser_check.add_argument("-b", "--bgp", help="Check BGP", dest='bgp', action='store_true')
+    subparser_check.add_argument("-v", "--verbose", help="Verbose output", dest='verbose', action='store_true')
 
     return parser.parse_args()
 
@@ -391,35 +472,77 @@ if __name__ == '__main__':
     else:
         if args.cumulus_crawler == 'search':
             if args.mac:
-                results = check_mac_address(args.mac, hosts)
+                results = search_mac_address(args.mac, hosts)
                 print('\n')
                 print(tabulate_to_console(results))
             elif args.iface:
-                results = check_interface_configuration(args.iface, hosts)
+                results = search_interface_configuration(args.iface, hosts)
                 print(results)
         elif args.cumulus_crawler == 'check':
             if args.bgp:
-                device = CumulusConnection(
-                    hostname='10.30.20.20',
-                    username=creds['username'],
-                    password=creds['password']
-                )
+                results = check_bgp_neighbors(['CSS1A-106-LEF-01', 'CSS1A-106-LEF-02'])
+                down_peers = []
+                tabulated_results = None
+                tr = {
+                    'hostname': [],
+                    'address family': [],
+                    'interface': [],
+                    'peer hostname': [],
+                    'configured': [],
+                    'status': []
+                }
 
-                address_families = ['ipv4 unicast', 'l2vpn evpn', 'ipv6 unicast']
-                bgp_sum = device.show_bgp_summary()
-                #print(json.dumps(bgp_sum, indent=4))
-                #bgp_sum = {'ipv4 unicast': {'as': 65180, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2287392, 'msgSent': 2160564, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045789, 'peerUptimeMsec': 4990441000, 'prefixReceivedCount': 7, 'remoteAs': 65181, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1937519, 'msgSent': 2160373, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045640, 'peerUptimeMsec': 4990590000, 'prefixReceivedCount': 6, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2188307, 'msgSent': 2160220, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045642, 'peerUptimeMsec': 4990588000, 'prefixReceivedCount': 6, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 15, 'ribMemory': 2280, 'routerId': '10.35.0.80', 'tableVersion': 29, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}, 'ipv6 unicast': {}, 'l2vpn evpn': {'as': 65180, 'bestPath': {'multiPathRelax': 'true'}, 'dynamicPeers': 0, 'peerCount': 3, 'peerMemory': 59208, 'peers': {'peerlink.4094': {'hostname': 'CSS1A-106-LEF-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2287393, 'msgSent': 2160565, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045789, 'peerUptimeMsec': 4990443000, 'prefixReceivedCount': 1800, 'remoteAs': 65181, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp49': {'hostname': 'CSS1A-105-SPN-01', 'idType': 'interface', 'inq': 0, 'msgRcvd': 1937520, 'msgSent': 2160374, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045640, 'peerUptimeMsec': 4990592000, 'prefixReceivedCount': 1800, 'remoteAs': 65170, 'state': 'Established', 'tableVersion': 0, 'version': 4}, 'swp50': {'hostname': 'CSS1A-105-SPN-02', 'idType': 'interface', 'inq': 0, 'msgRcvd': 2188308, 'msgSent': 2160221, 'outq': 0, 'peerUptime': '08w1d18h', 'peerUptimeEstablishedEpoch': 1560045642, 'peerUptimeMsec': 4990590000, 'prefixReceivedCount': 1800, 'remoteAs': 65171, 'state': 'Established', 'tableVersion': 0, 'version': 4}}, 'ribCount': 403, 'ribMemory': 61256, 'routerId': '10.35.0.80', 'tableVersion': 0, 'totalPeers': 3, 'vrfId': 0, 'vrfName': 'default'}}
+                for entry in results:
+                    hostname = entry['hostname']
 
-                print('\n')
-                for family in address_families:
-                    print(f"--- {family} ---")
-                    if bgp_sum[family].get('peers'):
-                        for interface, details in bgp_sum[family]['peers'].items():
-                            print(f"{interface} --> {details.get('hostname')} ({details['state']})")
-                    else:
-                        print('No Peers')
-                    print("---------------------")
+                    for family in ADDRESS_FAMILIES:
+                        for peer in entry[family]:
+                            peer['hostname'] = hostname
+                            tr['hostname'].append(hostname)
+                            tr['address family'].append(family)
+                            tr['interface'].append(peer['interface'])
+                            tr['peer hostname'].append(peer['peer_hostname'])
+
+                            if peer['found']:
+                                tr['configured'].append('yes')
+                            else:
+                                down_peers.append(peer)
+                                tr['configured'].append(bcolors.FAIL + 'no' + bcolors.ENDC)
+
+                            if peer['established']:
+                                tr['status'].append('Established')
+                            else:
+                                down_peers.append(peer)
+                                tr['status'].append(bcolors.FAIL + 'Not Established' + bcolors.ENDC)
+
+                tabulated_table = tabulate(tr,
+                                             headers="keys", tablefmt="simple")
+
+                if args.verbose:
+                    print('\n', tabulated_table)
                     print('\n')
+                else:
+                    for peer in down_peers:
+                        if not peer['found']:
+                            reason = "is not configured"
+                        elif not peer['established']:
+                            reason = "peering is not established"
+                        print("\n", f"{bcolors.FAIL} --> {peer['hostname']}'s required peer "
+                        f"on interface {peer['interface']} "
+                        f"to {peer['peer_hostname']} failed check because \n {' ' * 4} {reason}! {bcolors.ENDC}", "\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
