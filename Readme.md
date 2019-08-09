@@ -1,5 +1,6 @@
 # Description
 This script will crawl a cumulus vxlan environment for things like mac address and interface configuration. 
+It also checks basic health of the VXLAN environment.
 The Script looks at the ```hosts.yaml``` file to determine the inventory. The script will look at the ```cumulus``` group.
 This script is multithreaded. 
  

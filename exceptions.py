@@ -16,5 +16,3 @@ class CommandNotSupported(Exception):
 
 class ValidationFileNotFound(Exception):
     pass
-
-

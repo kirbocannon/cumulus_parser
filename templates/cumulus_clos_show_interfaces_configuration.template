@@ -2,9 +2,11 @@ Value Required NAME (.*)
 Value ALIAS (.*)
 Value IP_ADDRESS (.*)
 Value MTU (\d+)
+Value LINK_SPEED (\d+)
 Value BOND_SLAVES (.*)
 Value BRIDGE_ACCESS (\d+)
 Value BRIDGE_PORTS (.*)
+Value BOND_MODE (.*)
 Value BRIDGE_VIDS ([\s\d-]*)
 Value BRIDGE_VLAN_AWARE (yes|no)
 Value CLAG_ID (\d+)
@@ -14,6 +16,7 @@ Value GATEWAY_IP_ADDRESS (.*)
 Value VXLAN_ID (\d+)
 Value VXLAN_LOCAL_TUNNEL_IP_ADDRESS (.*)
 Value VXLAN_REMOTE_IP_ADDRESS (.*)
+Value VRF_TABLE (.*)
 
 
 Start
@@ -22,20 +25,25 @@ Start
   ^\s+alias\s?${ALIAS}
   ^\s+address\s?${IP_ADDRESS}
   ^\s+mtu\s?${MTU}
+  ^\s+link-speed\s?${LINK_SPEED}
   ^\s+bond-slaves\s?${BOND_SLAVES}
   ^\s+bridge-access\s?${BRIDGE_ACCESS}
   ^\s+bridge-ports\s?${BRIDGE_PORTS}
   ^\s+bridge-vids\s?${BRIDGE_VIDS}
   ^\s+bridge-vlan-aware\s?${BRIDGE_VLAN_AWARE}
+  ^\s+bond-mode\s?${BOND_MODE}
   ^\s+clag-id\s?${CLAG_ID}
   ^\s+vrf\s+${VRF}
   ^\s+clagd-vxlan-anycast-ip\s?${CLAGD_ANYCAST_IP_ADDRESS}
   ^\s+gateway ${GATEWAY_IP_ADDRESS}
-  ^\s+vxlan-id ${VXLAN_ID} -> VNI
-  ^\s+vxlan-local-tunnelip ${VXLAN_LOCAL_TUNNEL_IP_ADDRESS}
-  ^\s+vxlan-remoteip ${VXLAN_REMOTE_IP_ADDRESS}
-
-VNI
   ^\s+vxlan-id ${VXLAN_ID}
   ^\s+vxlan-local-tunnelip ${VXLAN_LOCAL_TUNNEL_IP_ADDRESS}
-  ^\s+vxlan-remoteip ${VXLAN_REMOTE_IP_ADDRESS} -> Start
+  ^\s+vxlan-remoteip ${VXLAN_REMOTE_IP_ADDRESS}
+  ^\s+vxlan-local-tunnelip ${VXLAN_LOCAL_TUNNEL_IP_ADDRESS}
+  ^\s+vxlan-remoteip ${VXLAN_REMOTE_IP_ADDRESS}
+  ^\s+vrf-table\s?${VRF_TABLE}
+
+#VNI
+#  ^\s+vxlan-id ${VXLAN_ID}
+#  ^\s+vxlan-local-tunnelip ${VXLAN_LOCAL_TUNNEL_IP_ADDRESS}
+#  ^\s+vxlan-remoteip ${VXLAN_REMOTE_IP_ADDRESS} -> Start
