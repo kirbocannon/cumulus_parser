@@ -325,7 +325,7 @@ if __name__ == '__main__':
     # get host inventory
     inventory_hosts = get_inventory_by_group(VENDOR)
     creds = get_credentials_by_key(VENDOR)
-    hosts = [host for host in inventory_hosts][0:1]
+    hosts = [host for host in inventory_hosts]
 
     # device = CumulusDevice(
     #     hostname=inventory_hosts['CSS1A-106-LEF-01'],
