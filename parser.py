@@ -233,9 +233,9 @@ def check_bgp_neighbors(hosts):
 
 
 def check_clag(hosts):
-    results = [{'command': 'show clag', 'output': {'clagIntfs': {'CS-EDGSW': {'clagId': 202, 'operstate': 'up', 'peerIf': 'CS-EDGSW', 'status': 'dual'}, 'CS-MGT': {'clagId': 203, 'operstate': 'up', 'peerIf': 'CS-MGT', 'status': 'dual'}, 'CS-iLF01': {'clagId': 201, 'operstate': 'up', 'peerIf': 'CS-iLF01', 'status': 'dual'}, 'KFG-H001': {'clagId': 119, 'operstate': 'up', 'peerIf': 'KFG-H001', 'status': 'dual'}, 'vni-1000': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1000', 'status': 'dual'}, 'vni-1001': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1001', 'status': 'dual'}, 'vni-1002': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1002', 'status': 'dual'}, 'vni-1003': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1003', 'status': 'dual'}, 'vni-1004': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1004', 'status': 'dual'}, 'vni-1102': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1102', 'status': 'dual'}, 'vni-1103': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1103', 'status': 'dual'}, 'vni-1200': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1200', 'status': 'dual'}, 'vni-1201': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1201', 'status': 'dual'}, 'vni-1202': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1202', 'status': 'dual'}, 'vni-1210': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1210', 'status': 'dual'}, 'vni-1251': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1251', 'status': 'dual'}, 'vni-1402': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1402', 'status': 'dual'}, 'vni-1998': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1998', 'status': 'dual'}, 'vni-1999': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1999', 'status': 'dual'}, 'vni-250': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-250', 'status': 'dual'}, 'vni-2511': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2511', 'status': 'dual'}, 'vni-2520': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2520', 'status': 'dual'}, 'vni-2521': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2521', 'status': 'dual'}, 'vni-2522': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2522', 'status': 'dual'}, 'vni-2577': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2577', 'status': 'dual'}, 'vni-2578': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2578', 'status': 'dual'}, 'vni-2579': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2579', 'status': 'dual'}, 'vni-2702': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2702', 'status': 'dual'}, 'vni-2704': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2704', 'status': 'dual'}, 'vni-2902': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2902', 'status': 'dual'}, 'vni-2903': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2903', 'status': 'dual'}, 'vni-2904': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2904', 'status': 'dual'}, 'vni-2905': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2905', 'status': 'dual'}, 'vni-501': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-501', 'status': 'dual'}, 'vni-504': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-504', 'status': 'dual'}, 'vni-505': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-505', 'status': 'dual'}, 'vni-506': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-506', 'status': 'dual'}, 'vni-507': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-507', 'status': 'dual'}, 'vni-508': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-508', 'status': 'dual'}, 'vni-511': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-511', 'status': 'dual'}, 'vni-512': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-512', 'status': 'dual'}, 'vni-513': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-513', 'status': 'dual'}, 'vni-514': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-514', 'status': 'dual'}, 'vni-517': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-517', 'status': 'dual'}, 'vni-519': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-519', 'status': 'dual'}, 'vni-520': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-520', 'status': 'dual'}, 'vni-521': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-521', 'status': 'dual'}, 'vni-522': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-522', 'status': 'dual'}, 'vni-523': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-523', 'status': 'dual'}, 'vni-524': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-524', 'status': 'dual'}, 'vni-525': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-525', 'status': 'dual'}, 'vni-599': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-599', 'status': 'dual'}, 'vni-600': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-600', 'status': 'dual'}, 'vni-602': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-602', 'status': 'dual'}, 'vni-604': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-604', 'status': 'dual'}, 'vni-605': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-605', 'status': 'dual'}, 'vni-620': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-620', 'status': 'dual'}}, 'status': {'backupActive': True, 'backupIp': '10.30.20.81', 'backupReason': '', 'backupVrf': 'mgmt', 'linklocal': False, 'ourId': '98:03:9b:f0:c7:9c', 'ourPriority': 1000, 'ourRole': 'primary', 'peerAlive': False, 'peerId': '98:03:9b:f2:cd:9c', 'peerIf': 'peerlink.4094', 'peerIp': '169.254.255.2', 'peerPriority': 2000, 'peerRole': 'secondary', 'sysMac': '44:38:39:ff:01:30', 'vxlanAnycast': '10.35.0.180'}}, 'host': '10.30.20.80'}]
-
-    #results = multithread_command('show clag', hosts)
+    #results = [{'command': 'show clag', 'output': {'clagIntfs': {'CS-EDGSW': {'clagId': 202, 'operstate': 'up', 'peerIf': 'CS-EDGSW', 'status': 'dual'}, 'CS-MGT': {'clagId': 203, 'operstate': 'up', 'peerIf': 'CS-MGT', 'status': 'dual'}, 'CS-iLF01': {'clagId': 201, 'operstate': 'up', 'peerIf': 'CS-iLF01', 'status': 'dual'}, 'KFG-H001': {'clagId': 119, 'operstate': 'up', 'peerIf': 'KFG-H001', 'status': 'dual'}, 'vni-1000': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1000', 'status': 'dual'}, 'vni-1001': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1001', 'status': 'dual'}, 'vni-1002': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1002', 'status': 'dual'}, 'vni-1003': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1003', 'status': 'dual'}, 'vni-1004': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1004', 'status': 'dual'}, 'vni-1102': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1102', 'status': 'dual'}, 'vni-1103': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1103', 'status': 'dual'}, 'vni-1200': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1200', 'status': 'dual'}, 'vni-1201': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1201', 'status': 'dual'}, 'vni-1202': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1202', 'status': 'dual'}, 'vni-1210': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1210', 'status': 'dual'}, 'vni-1251': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1251', 'status': 'dual'}, 'vni-1402': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1402', 'status': 'dual'}, 'vni-1998': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1998', 'status': 'dual'}, 'vni-1999': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1999', 'status': 'dual'}, 'vni-250': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-250', 'status': 'dual'}, 'vni-2511': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2511', 'status': 'dual'}, 'vni-2520': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2520', 'status': 'dual'}, 'vni-2521': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2521', 'status': 'dual'}, 'vni-2522': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2522', 'status': 'dual'}, 'vni-2577': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2577', 'status': 'dual'}, 'vni-2578': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2578', 'status': 'dual'}, 'vni-2579': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2579', 'status': 'dual'}, 'vni-2702': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2702', 'status': 'dual'}, 'vni-2704': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2704', 'status': 'dual'}, 'vni-2902': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2902', 'status': 'dual'}, 'vni-2903': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2903', 'status': 'dual'}, 'vni-2904': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2904', 'status': 'dual'}, 'vni-2905': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2905', 'status': 'dual'}, 'vni-501': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-501', 'status': 'dual'}, 'vni-504': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-504', 'status': 'dual'}, 'vni-505': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-505', 'status': 'dual'}, 'vni-506': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-506', 'status': 'dual'}, 'vni-507': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-507', 'status': 'dual'}, 'vni-508': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-508', 'status': 'dual'}, 'vni-511': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-511', 'status': 'dual'}, 'vni-512': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-512', 'status': 'dual'}, 'vni-513': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-513', 'status': 'dual'}, 'vni-514': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-514', 'status': 'dual'}, 'vni-517': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-517', 'status': 'dual'}, 'vni-519': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-519', 'status': 'dual'}, 'vni-520': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-520', 'status': 'dual'}, 'vni-521': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-521', 'status': 'dual'}, 'vni-522': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-522', 'status': 'dual'}, 'vni-523': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-523', 'status': 'dual'}, 'vni-524': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-524', 'status': 'dual'}, 'vni-525': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-525', 'status': 'dual'}, 'vni-599': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-599', 'status': 'dual'}, 'vni-600': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-600', 'status': 'dual'}, 'vni-602': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-602', 'status': 'dual'}, 'vni-604': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-604', 'status': 'dual'}, 'vni-605': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-605', 'status': 'dual'}, 'vni-620': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-620', 'status': 'dual'}}, 'status': {'backupActive': True, 'backupIp': '10.30.20.81', 'backupReason': '', 'backupVrf': 'mgmt', 'linklocal': False, 'ourId': '98:03:9b:f0:c7:9c', 'ourPriority': 1000, 'ourRole': 'primary', 'peerAlive': False, 'peerId': '98:03:9b:f2:cd:9c', 'peerIf': 'peerlink.4094', 'peerIp': '169.254.255.2', 'peerPriority': 2000, 'peerRole': 'secondary', 'sysMac': '44:38:39:ff:01:30', 'vxlanAnycast': '10.35.0.180'}}, 'host': '10.30.20.80'}]
+    #hosts = ['SFD-C319-SPN-SN2700-01', 'SFD-C320-BLF-S4048-01', ]
+    results = multithread_command('show clag', hosts)
 
     down_peers = []
     tr = {
@@ -249,17 +249,25 @@ def check_clag(hosts):
         hostname = get_hostname_by_ip(entry['host'])
         tr['hostname'].append(hostname)
 
+        if hostname == 'SFD-C319-SPN-SN2700-01':
+            print(entry)
+
+        ce = {
+            'hostname': '',
+            'alive': '',
+            'role': '',
+            'vxlan anycast ip': ''
+        }
+
         if entry['output']:
             alive = entry['output']['status']['peerAlive']
             role = entry['output']['status']['ourRole']
-            vxlan_anycast_ip = entry['output']['status']['vxlanAnycast']
+            vxlan_anycast_ip = entry['output']['status'].get('vxlanAnycast', 'not configured')
 
-            ce = {
-                'hostname': hostname,
-                'alive': alive,
-                'role': role,
-                'vxlan anycast ip': vxlan_anycast_ip
-            }
+            ce['hostname'] = hostname
+            ce['alive'] = alive
+            ce['role'] = role
+            ce['vxlan anycast ip'] = vxlan_anycast_ip
 
             tr['role'].append(role)
             tr['vxlan anycast ip'].append(vxlan_anycast_ip)
@@ -267,9 +275,18 @@ def check_clag(hosts):
             if alive:
                 tr['status'].append('up')
             else:
-
-                down_peers.append(ce)
                 tr['status'].append(bcolors.FAIL + 'down' + bcolors.ENDC)
+                down_peers.append(ce)
+        else:
+            ce['hostname'] = hostname
+            ce['alive'] = 'not configured'
+            ce['role'] = '-'
+            ce['vxlan anycast ip'] = 'not configured'
+            down_peers.append(ce)
+
+            tr['status'].append('not configured')
+            tr['role'].append('-')
+            tr['vxlan anycast ip'].append('not configured')
 
     tabulated_table = tabulate(tr,
                                headers="keys", tablefmt="simple")
@@ -457,15 +474,16 @@ if __name__ == '__main__':
                             f"to {peer['peer_hostname']} failed check because \n {' ' * 4} {reason}. {bcolors.ENDC}", "\n")
 
             elif args.check_clag:
-                clag_status = check_clag(['CSS1A-106-LEF-01'])
+                clag_status = check_clag(inventory_hosts)
 
                 if args.verbose:
-                    print(clag_status['tabulated_table'])
+                    print("\n", clag_status['tabulated_table'])
                 else:
                     if clag_status['down_peers']:
                         for dp in clag_status['down_peers']:
                             print("\n", f"{bcolors.FAIL} --> {dp['hostname']} failed check because system clag (mlag) is down. "
                                   f"The VXLAN Anycast IP is: {dp['vxlan anycast ip']} {bcolors.ENDC}", "\n")
+                        print("\n")
 
 
 
