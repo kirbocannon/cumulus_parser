@@ -4,8 +4,7 @@ import yaml
 from utils.logger import logger
 from tabulate import tabulate
 from cumulus_parser import CumulusDevice
-from utils import parse_output, \
-    bcolors
+from utils import bcolors
 from exceptions import *
 from multiprocessing .dummy import Pool as Threadpool
 
@@ -233,33 +232,52 @@ def check_bgp_neighbors(hosts):
     return required_peers
 
 
-def tabulate_to_console(results):
-    tabulated_results = {}
+def check_clag(hosts):
+    results = [{'command': 'show clag', 'output': {'clagIntfs': {'CS-EDGSW': {'clagId': 202, 'operstate': 'up', 'peerIf': 'CS-EDGSW', 'status': 'dual'}, 'CS-MGT': {'clagId': 203, 'operstate': 'up', 'peerIf': 'CS-MGT', 'status': 'dual'}, 'CS-iLF01': {'clagId': 201, 'operstate': 'up', 'peerIf': 'CS-iLF01', 'status': 'dual'}, 'KFG-H001': {'clagId': 119, 'operstate': 'up', 'peerIf': 'KFG-H001', 'status': 'dual'}, 'vni-1000': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1000', 'status': 'dual'}, 'vni-1001': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1001', 'status': 'dual'}, 'vni-1002': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1002', 'status': 'dual'}, 'vni-1003': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1003', 'status': 'dual'}, 'vni-1004': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1004', 'status': 'dual'}, 'vni-1102': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1102', 'status': 'dual'}, 'vni-1103': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1103', 'status': 'dual'}, 'vni-1200': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1200', 'status': 'dual'}, 'vni-1201': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1201', 'status': 'dual'}, 'vni-1202': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1202', 'status': 'dual'}, 'vni-1210': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1210', 'status': 'dual'}, 'vni-1251': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1251', 'status': 'dual'}, 'vni-1402': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1402', 'status': 'dual'}, 'vni-1998': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1998', 'status': 'dual'}, 'vni-1999': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-1999', 'status': 'dual'}, 'vni-250': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-250', 'status': 'dual'}, 'vni-2511': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2511', 'status': 'dual'}, 'vni-2520': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2520', 'status': 'dual'}, 'vni-2521': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2521', 'status': 'dual'}, 'vni-2522': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2522', 'status': 'dual'}, 'vni-2577': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2577', 'status': 'dual'}, 'vni-2578': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2578', 'status': 'dual'}, 'vni-2579': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2579', 'status': 'dual'}, 'vni-2702': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2702', 'status': 'dual'}, 'vni-2704': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2704', 'status': 'dual'}, 'vni-2902': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2902', 'status': 'dual'}, 'vni-2903': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2903', 'status': 'dual'}, 'vni-2904': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2904', 'status': 'dual'}, 'vni-2905': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-2905', 'status': 'dual'}, 'vni-501': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-501', 'status': 'dual'}, 'vni-504': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-504', 'status': 'dual'}, 'vni-505': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-505', 'status': 'dual'}, 'vni-506': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-506', 'status': 'dual'}, 'vni-507': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-507', 'status': 'dual'}, 'vni-508': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-508', 'status': 'dual'}, 'vni-511': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-511', 'status': 'dual'}, 'vni-512': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-512', 'status': 'dual'}, 'vni-513': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-513', 'status': 'dual'}, 'vni-514': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-514', 'status': 'dual'}, 'vni-517': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-517', 'status': 'dual'}, 'vni-519': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-519', 'status': 'dual'}, 'vni-520': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-520', 'status': 'dual'}, 'vni-521': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-521', 'status': 'dual'}, 'vni-522': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-522', 'status': 'dual'}, 'vni-523': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-523', 'status': 'dual'}, 'vni-524': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-524', 'status': 'dual'}, 'vni-525': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-525', 'status': 'dual'}, 'vni-599': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-599', 'status': 'dual'}, 'vni-600': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-600', 'status': 'dual'}, 'vni-602': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-602', 'status': 'dual'}, 'vni-604': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-604', 'status': 'dual'}, 'vni-605': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-605', 'status': 'dual'}, 'vni-620': {'clagId': 0, 'operstate': 'up', 'peerIf': 'vni-620', 'status': 'dual'}}, 'status': {'backupActive': True, 'backupIp': '10.30.20.81', 'backupReason': '', 'backupVrf': 'mgmt', 'linklocal': False, 'ourId': '98:03:9b:f0:c7:9c', 'ourPriority': 1000, 'ourRole': 'primary', 'peerAlive': False, 'peerId': '98:03:9b:f2:cd:9c', 'peerIf': 'peerlink.4094', 'peerIp': '169.254.255.2', 'peerPriority': 2000, 'peerRole': 'secondary', 'sysMac': '44:38:39:ff:01:30', 'vxlanAnycast': '10.35.0.180'}}, 'host': '10.30.20.80'}]
+
+    #results = multithread_command('show clag', hosts)
+
+    down_peers = []
+    tr = {
+        'hostname': [],
+        'status': [],
+        'role': [],
+        'vxlan anycast ip': [],
+    }
 
     for entry in results:
-        for k, v in entry.items():
-            k = k.upper()
-            if not tabulated_results.get(k):
-                tabulated_results[k] = []
-            tabulated_results[k].append(v)
+        hostname = get_hostname_by_ip(entry['host'])
+        tr['hostname'].append(hostname)
 
-    if tabulated_results:
-        if tabulated_results.get('FOUND'):
-            found_with_bcolor = []
-            for i in tabulated_results['FOUND']:
-                if i:
-                    found_with_bcolor.append(bcolors.OKBLUE +
-                                             "Yes" + bcolors.ENDC)
-                else:
-                    found_with_bcolor.append(bcolors.FAIL +
-                                             "No" + bcolors.ENDC)
+        if entry['output']:
+            alive = entry['output']['status']['peerAlive']
+            role = entry['output']['status']['ourRole']
+            vxlan_anycast_ip = entry['output']['status']['vxlanAnycast']
 
-            tabulated_results['FOUND'] = found_with_bcolor
+            ce = {
+                'hostname': hostname,
+                'alive': alive,
+                'role': role,
+                'vxlan anycast ip': vxlan_anycast_ip
+            }
 
-        tabulated_results = tabulate(tabulated_results,
-                                     headers="keys", tablefmt="fancy_grid")
+            tr['role'].append(role)
+            tr['vxlan anycast ip'].append(vxlan_anycast_ip)
 
-    return tabulated_results
+            if alive:
+                tr['status'].append('up')
+            else:
+
+                down_peers.append(ce)
+                tr['status'].append(bcolors.FAIL + 'down' + bcolors.ENDC)
+
+    tabulated_table = tabulate(tr,
+                               headers="keys", tablefmt="simple")
+
+    return dict(
+        down_peers=down_peers,
+        tabulated_table=tabulated_table
+    )
 
 
 def cumulus_interface_to_ansible_vars(interfaces):
@@ -315,7 +333,8 @@ def gen_args():
     #mgroup_check = subparser_check.add_mutually_exclusive_group(required=True)
     mgroup_search.add_argument("-m", "--mac", help="Search MAC address", dest='mac')
     mgroup_search.add_argument("-i", "--iface", help="Search Interface", dest='iface')
-    subparser_check.add_argument("-b", "--bgp", help="Check BGP", dest='bgp', action='store_true')
+    subparser_check.add_argument("-b", "--bgp", help="Check BGP", dest='check_bgp', action='store_true')
+    subparser_check.add_argument("-c", "--clag", help="Check CLAG", dest='check_clag', action='store_true')
     subparser_check.add_argument("-v", "--verbose", help="Verbose output", dest='verbose', action='store_true')
 
     return parser.parse_args()
@@ -325,17 +344,22 @@ if __name__ == '__main__':
     # get host inventory
     inventory_hosts = get_inventory_by_group(VENDOR)
     creds = get_credentials_by_key(VENDOR)
-    hosts = [host for host in inventory_hosts]
+    hosts = [host for host in inventory_hosts][0:1]
 
     # device = CumulusDevice(
     #     hostname=inventory_hosts['CSS1A-106-LEF-01'],
+    #     #hostname=inventory_hosts['CSS1A-106-LEF-01'],
     #     username=creds['username'],
     #     password=creds['password']
     # )
-    #
+
     # interfaces = device.show_interfaces_configuration()
-    #
     # print(yaml.dump(cumulus_interface_to_ansible_vars(interfaces), indent=2))
+    #device.show_interfaces_status()
+
+    # r = search_mac_address('5c:f9:dd:ef:ab:82', hosts)
+    # print(r)
+    #
 
     args = gen_args()
 
@@ -346,12 +370,37 @@ if __name__ == '__main__':
             if args.mac:
                 results = search_mac_address(args.mac, hosts)
                 print('\n')
-                print(tabulate_to_console(results))
+                tabulated_results = {}
+
+                for entry in results:
+                    for k, v in entry.items():
+                        k = k.upper()
+                        if not tabulated_results.get(k):
+                            tabulated_results[k] = []
+                        tabulated_results[k].append(v)
+
+                if tabulated_results:
+                    if tabulated_results.get('FOUND'):
+                        found_with_bcolor = []
+                        for i in tabulated_results['FOUND']:
+                            if i:
+                                found_with_bcolor.append(bcolors.OKBLUE +
+                                                         "Yes" + bcolors.ENDC)
+                            else:
+                                found_with_bcolor.append(bcolors.FAIL +
+                                                         "No" + bcolors.ENDC)
+
+                        tabulated_results['FOUND'] = found_with_bcolor
+
+                    tabulated_results = tabulate(tabulated_results,
+                                                 headers="keys", tablefmt="fancy_grid")
+                    print(tabulated_results)
+
             elif args.iface:
                 results = search_interface_configuration(args.iface, hosts)
                 print(results)
         elif args.cumulus_crawler == 'check':
-            if args.bgp:
+            if args.check_bgp:
                 #results = check_bgp_neighbors(['CSS1A-109-LEF-03', 'CSS1A-109-LEF-04'])
                 results = check_bgp_neighbors(inventory_hosts)
                 down_peers = []
@@ -405,5 +454,21 @@ if __name__ == '__main__':
                                 reason = "peering is not established"
                             print("\n", f"{bcolors.FAIL} --> {peer['hostname']}'s required peer "
                             f"on interface {peer['interface']} "
-                            f"to {peer['peer_hostname']} failed check because \n {' ' * 4} {reason}! {bcolors.ENDC}", "\n")
+                            f"to {peer['peer_hostname']} failed check because \n {' ' * 4} {reason}. {bcolors.ENDC}", "\n")
 
+            elif args.check_clag:
+                clag_status = check_clag(['CSS1A-106-LEF-01'])
+
+                if args.verbose:
+                    print(clag_status['tabulated_table'])
+                else:
+                    if clag_status['down_peers']:
+                        for dp in clag_status['down_peers']:
+                            print("\n", f"{bcolors.FAIL} --> {dp['hostname']} failed check because system clag (mlag) is down. "
+                                  f"The VXLAN Anycast IP is: {dp['vxlan anycast ip']} {bcolors.ENDC}", "\n")
+
+
+
+
+            else:
+                print("Please enter argument. Use -h for help.")

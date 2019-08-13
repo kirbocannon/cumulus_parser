@@ -28,15 +28,14 @@ class CumulusDevice(object):
                                look_for_keys=False,
                                allow_agent=False, timeout=5)
 
-            #print("SSH connection established to {0}".format(self.hostname))
             logger.info(f"SSH Connection established to {self.hostname}")
             self.session = ssh_client
 
         except (pexception.BadHostKeyException,
                 pexception.AuthenticationException,
                 pexception.SSHException,
-                pexception.socket.error) as e:
-            logger.error(f"{e}: Error connecting to {self.hostname}")
+                pexception.socket.error) as err:
+            logger.error(f"{err}: Error connecting to {self.hostname}")
             raise ConnectionError
 
         return
@@ -90,17 +89,22 @@ class CumulusDevice(object):
 
     def show_version(self, from_json=True):
         command = 'net show version'
+        structured_output = None
 
         if from_json:
             output = self.send_command(command + ' ' + 'json')[0]['output']
-            structured_output = json.loads(output)
+
+            if output:
+                structured_output = json.loads(output)
         else:
             output = self.send_command(command)[0]['output']
-            structured_output = parse_output(
-                template_dir=TEMPLATE_DIR,
-                command=command,
-                platform=PLATFORM,
-                data=output)[0]
+
+            if output:
+                structured_output = parse_output(
+                    template_dir=TEMPLATE_DIR,
+                    command=command,
+                    platform=PLATFORM,
+                    data=output)[0]
 
         return structured_output
 
@@ -109,18 +113,23 @@ class CumulusDevice(object):
         does not return VLAN ID. So default from_json will be set to False here """
         state = state.lower()
         command = f"net show bridge macs {state}"
+        structured_output = None
 
         if from_json:
             output = self.send_command(command + ' ' + 'json')[0]['output']
-            structured_output = json.loads(output)
+
+            if output:
+                structured_output = json.loads(output)
 
         else:
             output = self.send_command(command)[0]['output']
-            structured_output = parse_output(
-                template_dir=TEMPLATE_DIR,
-                command=command,
-                platform=PLATFORM,
-                data=output)
+
+            if output:
+                structured_output = parse_output(
+                    template_dir=TEMPLATE_DIR,
+                    command=command,
+                    platform=PLATFORM,
+                    data=output)
 
         return structured_output
 
@@ -169,8 +178,37 @@ class CumulusDevice(object):
         """ Currently only supports JSON output
             Currently no VRF support """
         command = "net show bgp summary"
-        output = self.send_command(command + ' ' + 'json')[0]['output']
-        structured_output = json.loads(output)
+        output = self.send_command(f"{command} json")[0]['output']
+        structured_output = None
+
+        if output:
+            structured_output = json.loads(output)
+
+        return structured_output
+
+    def show_interfaces_status(self):
+        """ Currently only supports JSON output
+            Show interface status """
+        command = "net show interface"
+        output = self.send_command(f"{command} json")[0]['output']
+        #interfaces = []
+        #vnis = []
+        structured_output = None
+
+        if output:
+            structured_output = json.loads(output)
+
+        return structured_output
+
+    def show_clag(self):
+        """ Currently only supports JSON output
+            Show clag status """
+        command = "net show clag"
+        output = self.send_command(f"{command} json")[0]['output']
+        structured_output = None
+
+        if output:
+            structured_output = json.loads(output)
 
         return structured_output
 
