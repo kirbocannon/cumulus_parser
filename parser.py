@@ -269,7 +269,7 @@ def check_clag(hosts):
             role = entry['output']['status']['ourRole']
             vxlan_anycast_ip = entry['output']['status'].get('vxlanAnycast', 'not configured')
             backup_active = entry['output']['status'].get('backupActive', 'not configured')
-            backup_ip = vxlan_anycast_ip = entry['output']['status'].get('backupIp', 'not configured')
+            backup_ip = entry['output']['status'].get('backupIp', 'not configured')
 
             ce['hostname'] = hostname
             ce['alive'] = alive
@@ -280,6 +280,8 @@ def check_clag(hosts):
 
             tr['role'].append(role)
             tr['vxlan anycast ip'].append(vxlan_anycast_ip)
+            tr['backup active'].append(backup_active)
+            tr['backup IP'].append(backup_ip)
 
             if alive:
                 tr['status'].append('up')
@@ -291,15 +293,15 @@ def check_clag(hosts):
             ce['alive'] = 'not configured'
             ce['role'] = '-'
             ce['vxlan anycast ip'] = 'not configured'
-            ce['backup active'] = 'not configured'
-            ce['backup IP'] = 'not configured'
+            ce['backup active'] = '-'
+            ce['backup IP'] = '-'
             down_peers.append(ce)
 
             tr['status'].append('not configured')
             tr['role'].append('-')
             tr['vxlan anycast ip'].append('not configured')
-            tr['backup active'].append('not configured')
-            tr['backup IP'].append('not configured')
+            tr['backup active'].append('-')
+            tr['backup IP'].append('-')
 
 
     tabulated_table = tabulate(tr,
