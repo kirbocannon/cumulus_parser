@@ -19,7 +19,7 @@ grand_rapids:
     CSS1A-106-LEF-02:
       ansible_host: 10.30.20.81
     CSS1A-109-LEF-03:
-      ansible_host: 10.30.20.82
+      ansible_host: 10.30.20.85
     CSS1A-109-LEF-04:
       ansible_host: 10.30.20.83
     CSS1A-105-EDG-01:

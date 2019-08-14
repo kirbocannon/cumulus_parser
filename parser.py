@@ -111,21 +111,26 @@ def multithread_command(command, hosts):
     host_ips = [inventory_hosts[host] for host in hosts]
 
     def _send_multithread_command(host):
-        device = CumulusDevice(
-            hostname=host,
-            username=creds['username'],
-            password=creds['password']
-        )
+        try:
+            device = CumulusDevice(
+                hostname=host,
+                username=creds['username'],
+                password=creds['password']
+            )
 
-        results = device.send_command([command])[0]
-        results['host'] = host
+            result = device.send_command([command])[0]
+            result['host'] = host
+        except ConnectionError:
+            result = None
 
-        return results
+        return result
 
     results = pool.map(_send_multithread_command, host_ips)
 
     pool.close()
     pool.join()
+
+    results = [result for result in results if result]
 
     return results
 
@@ -189,7 +194,6 @@ def search_mac_address(mac, hosts):
 
 def check_bgp_neighbors(hosts):
     required_peers = []
-
     results = multithread_command('show bgp summary', hosts)
 
     for result in results:
@@ -243,31 +247,36 @@ def check_clag(hosts):
         'status': [],
         'role': [],
         'vxlan anycast ip': [],
+        'backup active': [],
+        'backup IP': []
     }
 
     for entry in results:
         hostname = get_hostname_by_ip(entry['host'])
         tr['hostname'].append(hostname)
 
-        if hostname == 'SFD-C319-SPN-SN2700-01':
-            print(entry)
-
         ce = {
             'hostname': '',
             'alive': '',
             'role': '',
-            'vxlan anycast ip': ''
+            'vxlan anycast ip': '',
+            'backup active': '',
+            'backup IP': ''
         }
 
         if entry['output']:
             alive = entry['output']['status']['peerAlive']
             role = entry['output']['status']['ourRole']
             vxlan_anycast_ip = entry['output']['status'].get('vxlanAnycast', 'not configured')
+            backup_active = entry['output']['status'].get('backupActive', 'not configured')
+            backup_ip = vxlan_anycast_ip = entry['output']['status'].get('backupIp', 'not configured')
 
             ce['hostname'] = hostname
             ce['alive'] = alive
             ce['role'] = role
             ce['vxlan anycast ip'] = vxlan_anycast_ip
+            ce['backup active'] = backup_active
+            ce['backup IP'] = backup_ip
 
             tr['role'].append(role)
             tr['vxlan anycast ip'].append(vxlan_anycast_ip)
@@ -282,11 +291,16 @@ def check_clag(hosts):
             ce['alive'] = 'not configured'
             ce['role'] = '-'
             ce['vxlan anycast ip'] = 'not configured'
+            ce['backup active'] = 'not configured'
+            ce['backup IP'] = 'not configured'
             down_peers.append(ce)
 
             tr['status'].append('not configured')
             tr['role'].append('-')
             tr['vxlan anycast ip'].append('not configured')
+            tr['backup active'].append('not configured')
+            tr['backup IP'].append('not configured')
+
 
     tabulated_table = tabulate(tr,
                                headers="keys", tablefmt="simple")
