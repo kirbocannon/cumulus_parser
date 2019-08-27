@@ -1,13 +1,14 @@
 import os
-import json
 import pytest
 import parser as cp
+import test.conf as conf
 
-TEST_DIR = os.path.dirname(os.path.abspath(__file__))
-MOCKED_DATA_PATH = os.path.join(TEST_DIR, 'mocked_data')
 SH_INT_C_MDP = os.path.join(
-    MOCKED_DATA_PATH,
+    conf.MOCKED_DATA_PATH,
     'show_interfaces_configuration.json')
+SH_CLAG = os.path.join(
+    conf.MOCKED_DATA_PATH,
+    'show_clag.json')
 TEST_INTERFACE = {
         "name": "vni-2905",
         "alias": "",
@@ -30,27 +31,24 @@ TEST_INTERFACE = {
     }
 
 
-def get_mock_data(mock_data_path):
-    with open(mock_data_path, 'r') as f:
-        data = json.loads(f.read())
-
-    return data
-
-
 @pytest.mark.parametrize('iface, results', [
     (TEST_INTERFACE['name'],
      [{
-         'command': '',
          'host': 'TEST-HOST',
-         'output': get_mock_data(SH_INT_C_MDP)
+         'output': conf.get_mock_data(SH_INT_C_MDP)
      }]
      ),
 ])
 def test_search_interface_configuration(iface, results):
-    iface = cp.search_interface_configuration(iface, results)[0].get('configuration') or ''
+    iface = cp.search_interface_configuration(iface, results)[0].get('configuration')
     assert iface == TEST_INTERFACE
 
 
-
+@pytest.mark.parametrize('results', [
+    (conf.get_mock_data(SH_CLAG)),
+])
+def test_check_clag(results):
+    clags = cp.check_clag(results)['down_peers']
+    assert len(clags) == 1
 
 
