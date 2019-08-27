@@ -1,7 +1,7 @@
 import os
 from config import *
 from utils.io import read_yaml_file
-
+from utils.logger import logger
 from exceptions import InventoryFileNotFound, \
     ValidationFileNotFound
 

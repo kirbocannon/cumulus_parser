@@ -98,9 +98,8 @@ def search_mac_address(mac, hosts):
     return mac_search_results
 
 
-def check_bgp_neighbors(hosts):
+def check_bgp_neighbors(results):
     required_peers = []
-    results = multithread_command('show bgp summary', hosts)
 
     for result in results:
         hostname = get_hostname_by_ip(result['host'])
@@ -304,10 +303,8 @@ def gen_args():
 
 if __name__ == '__main__':
     # get host inventory
-
-
     creds = get_credentials_by_key(VENDOR)
-    hosts = [host for host in INVENTORY_HOSTS][0:1]
+    hosts = [host for host in INVENTORY_HOSTS]
 
     # device = CumulusDevice(
     #     hostname=INVENTORY_HOSTS['CSS1A-106-LEF-01'],
@@ -368,7 +365,9 @@ if __name__ == '__main__':
         elif args.cumulus_crawler == 'check':
             if args.check_bgp:
                 #results = check_bgp_neighbors(['CSS1A-109-LEF-03', 'CSS1A-109-LEF-04'])
-                results = check_bgp_neighbors(INVENTORY_HOSTS)
+                #results = check_bgp_neighbors(INVENTORY_HOSTS)
+                results = check_bgp_neighbors(
+                    results=multithread_command('show bgp summary', hosts))
                 down_peers = []
                 tabulated_results = None
                 tr = {
