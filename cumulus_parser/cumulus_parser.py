@@ -109,8 +109,22 @@ class CumulusDevice(object):
         return structured_output
 
     def show_bridge_macs(self, state='dynamic', from_json=False):
-        """ Get bridge macs from Device. Currently it seems like json output
-        does not return VLAN ID. So default from_json will be set to False here """
+        """Get bridge macs from Device. Currently it seems like json output
+           does not return VLAN ID. So default from_json will be set to False here
+
+        Args:
+            state (str): Can be ``dynamic`` or ``static`` mac address entries.
+            from_json (bool): ``True`` if output of Cumulus device should be ``json``. 
+                              ``False`` if ``string`` output
+
+        Returns:
+            structured_dict (:obj: `list` of :obj: `dict`): Parsed CLI or JSON Output
+
+        Examples:
+
+            >>>
+            
+        """
         state = state.lower()
         command = f"net show bridge macs {state}"
         structured_output = None
